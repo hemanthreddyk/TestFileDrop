@@ -2,16 +2,14 @@ const SftpClient = require('./sequest-client')
 const stream = require('stream')
 const { Readable } = stream
 
-const { config } = require('./constants')
+const { username, password, host, port } = require('./constants')
 
 async function transferFile () {
-  const { username, password, host, port } = config
-
   const fileContent = Buffer.from('Hello World')
 
-  const SftpClients = new SftpClient({ username, password, host, port }, {})
   try {
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 100; i++) {
+      const SftpClients = new SftpClient({ username, password, host, port }, {})
       const readableStream = new Readable()
       readableStream.push(fileContent)
       readableStream.push(null)

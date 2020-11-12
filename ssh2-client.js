@@ -4,6 +4,11 @@ const retryConfig = {
   retry_factor: 2, // Time factor used to calculate time between retries
   retry_minTimeout: 500 //  Minimum timeout between retries in milliseconds
 }
+const sleep = (time) => {
+  return new Promise(resolve => {
+    setTimeout(resolve, time)
+  })
+}
 
 class SftpClient {
   constructor (secrets, traceObj) {
@@ -44,14 +49,19 @@ class SftpClient {
     try {
       sftpClient = await this.getConnection()
       console.log('Uploading the file to the remote SFTP server')
-      await sftpClient.put(fileStream, remotePath)
-      console.log('Finished uploading the file')
+      const response = await sftpClient.put(fileStream, remotePath)
+      console.log('Finished uploading the file,', response)
+      return response
+      // await sleep(5000)
+      // const isFileExists = await sftpClient.exists(remotePath)
+      // console.log('file-exists', isFileExists)
     } catch (error) {
       console.log(error)
       throw error
     } finally {
       if (sftpClient) {
-        sftpClient.end()
+        await sftpClient.end()
+        console.log('connection ended successfully')
       }
     }
   }
